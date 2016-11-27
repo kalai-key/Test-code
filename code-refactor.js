@@ -1,4 +1,4 @@
- $scope.checkAllFieldsPresent = function () {
+$scope.checkAllFieldsPresent = function () {
       if ($scope.requestedListingData) {
         var atleastOneBookableSelected = false;
         var nowTemp = new Date();
@@ -14,38 +14,34 @@
           }
         });
 
-        switch ($scope.packeageType ) {
-            case '1':
-                if (!$scope.requestedListingData.date_from || !$scope.requestedListingData.date_until) {
-                  $scope.showMessage('Please select your check-in and check-out dates');
-                  return false;
-                } else {
-                  if (isPastCheckInDate) {
-                    $scope.showMessage('Please check-in date cannot be in past');
-                    return false;
-                  }
-                }
-                break;
-                
-            default:
-                if (!$scope.requestedListingData.date_from) {
-                  $scope.showMessage('Please select your check-in and check-out dates');
-                  return false;
-                } else {
-                  // hack to get statup tour request video working
-                  if (isPastCheckInDate) {
-                    if ($scope.listing.code === 'startuptour' && $scope.listing.config['default_date']) {
-                      angular.forEach($scope.requestedListingData.bookables, function (bookable) {
-                        bookable.requested = 1;
-                      });
-                      return true;
-                    }
+        if ($scope.packeageType === 1) {
+          if (!$scope.requestedListingData.date_from || !$scope.requestedListingData.date_until) {
+            $scope.showMessage('Please select your check-in and check-out dates');
+            return false;
+          } else {
+            if (isPastCheckInDate) {
+              $scope.showMessage('Please check-in date cannot be in past');
+              return false;
+            }
+          }
+        } else {
+          if (!$scope.requestedListingData.date_from) {
+            $scope.showMessage('Please select your check-in and check-out dates');
+            return false;
+          } else {
+            // hack to get statup tour request video working
+            if (isPastCheckInDate) {
+              if ($scope.listing.code === 'startuptour' && $scope.listing.config['default_date']) {
+                angular.forEach($scope.requestedListingData.bookables, function (bookable) {
+                  bookable.requested = 1;
+                });
+                return true;
+              }
 
-                    $scope.showMessage('Please check-in date cannot be in past');
-                    return false;
-                  }
-                }
-                break;
+              $scope.showMessage('Please check-in date cannot be in past');
+              return false;
+            }
+          }
         }
 
         if (!atleastOneBookableSelected) {
@@ -62,5 +58,3 @@
         return false;
       }
     }
-
-    
