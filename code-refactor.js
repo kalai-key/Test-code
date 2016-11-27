@@ -1,4 +1,4 @@
-$scope.checkAllFieldsPresent = function () {
+ $scope.checkAllFieldsPresent = function () {
       if ($scope.requestedListingData) {
         var atleastOneBookableSelected = false;
         var nowTemp = new Date();
@@ -7,43 +7,34 @@ $scope.checkAllFieldsPresent = function () {
         var checkInDate = moment($scope.requestedListingData.date_from, 'DD/MM/YYYY').toDate();
         var isPastCheckInDate = checkInDate < currentDate;
 
-
         angular.forEach($scope.requestedListingData.bookables, function (value, key) {
           if (value && value.requested > 0) {
             atleastOneBookableSelected = true;
           }
         });
-
-        if ($scope.packeageType === 1) {
-          if (!$scope.requestedListingData.date_from || !$scope.requestedListingData.date_until) {
-            $scope.showMessage('Please select your check-in and check-out dates');
-            return false;
-          } else {
-            if (isPastCheckInDate) {
-              $scope.showMessage('Please check-in date cannot be in past');
-              return false;
-            }
-          }
-        } else {
-          if (!$scope.requestedListingData.date_from) {
-            $scope.showMessage('Please select your check-in and check-out dates');
-            return false;
-          } else {
-            // hack to get statup tour request video working
-            if (isPastCheckInDate) {
+        // Refactor code
+        if ($scope.requestedListingData.date_from) {
+          if (isPastCheckInDate) {
+            if ($scope.packeageType != 1) {
               if ($scope.listing.code === 'startuptour' && $scope.listing.config['default_date']) {
                 angular.forEach($scope.requestedListingData.bookables, function (bookable) {
                   bookable.requested = 1;
                 });
                 return true;
               }
-
-              $scope.showMessage('Please check-in date cannot be in past');
-              return false;
+            }
+            $scope.showMessage('Please check-in date cannot be in past');
+            return false;
+          } else {
+            if ($scope.packeageType === 1) {
+              if ($scope.requestedListingData.date_until)
+                $scope.showMessage('Please select your check-in and check-out dates');
             }
           }
+        } else {
+          $scope.showMessage('Please select your check-in and check-out dates');
         }
-
+        // End Refactor code
         if (!atleastOneBookableSelected) {
           $scope.showMessage('Please select atleast one stay/experience');
           return false;
